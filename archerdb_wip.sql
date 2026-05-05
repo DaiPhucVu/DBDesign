@@ -165,6 +165,8 @@ INSERT INTO `equipment` (`EquipmentName`) VALUES
   ('Compound Barebow'),
   ('Longbow');
 
+-- more classes added
+-- i asked chatGPT for min and max age
 INSERT INTO `archerclass` (`ClassName`, `Gender`, `MinAge`, `MaxAge`) VALUES
   ('Male Open',       'M', 21, 49),
   ('Female Open',     'F', 21, 49),
@@ -180,7 +182,7 @@ INSERT INTO `archerclass` (`ClassName`, `Gender`, `MinAge`, `MaxAge`) VALUES
   ('Under 18 Female', 'F', 16, 17),
   ('Under 16 Male', 'M', 14, 15),
   ('Under 16 Female', 'F', 14, 15),
-  ('Under 14 Male', 'M', 6, 13),
+  ('Under 14 Male', 'M', 6, 13), -- chat gpt said <=13 idk i put 6
   ('Under 14 Female', 'F', 6, 13);
 
 INSERT INTO `archerinfo` (`AVNumber`, `Fname`, `Lname`, `BirthYear`, `Gender`, `DefaultEquipmentID`) VALUES
@@ -190,12 +192,47 @@ INSERT INTO `archerinfo` (`AVNumber`, `Fname`, `Lname`, `BirthYear`, `Gender`, `
   ('AV10078', 'Maria',  'Flores',  1988, 'F', 1),  -- recurve, Female Open
   ('AV10091', 'Chris',  'Patel',   1990, 'M', 2);  -- compound, Male Open
 
--- rounds (WA only for now, city rounds still to add)
+-- rounds (added every rounds i could find on https://archeryaustralia.app.box.com/s/79h2zc3q0bu8ks172rdbdpzg9kpdo2f6 
 INSERT INTO `roundinfo` (`RoundName`, `MaxScore`) VALUES
   ('WA90/1440', 1440),
   ('WA70/1440', 1440),
   ('WA60/1440', 1440),
-  ('Sydney',    1200);
+  ('AA50/1440', 1440),
+  ('AA40/1440', 1440),
+  ('Long Sydney', 1200),
+  ('Sydney', 1200),
+  ('Long Brisbane', 1200),
+  ('Brisbane', 1200),
+  ('Adelaide', 1200),
+  ('Short Adelaide', 1200),
+  ('Hobart', 900),
+  ('Perth', 900),
+  ('Canberra WA60/900', 900),
+  ('Short Canberra', 900),
+  ('Junior Canberra', 900),
+  ('Mini Canberra', 900),
+  ('Grange', 900),
+  ('Melbourne', 900),
+  ('Darwin', 900),
+  ('Geelong', 900),
+  ('Newcastle', 900),
+  ('Holt', 900),
+  ('Samford', 900),
+  ('Drake', 900),
+  ('Wollongong', 720),
+  ('Townsville', 720),
+  ('Launceston', 720),
+  ('WA70/720', 720),
+  ('WA60/720', 720),
+  ('WA50/720', 720),
+  ('AA50/720', 720),
+  ('WABB50/720', 720),
+  ('AA40/720', 720),
+  ('AA30/720', 720),
+  ('AA20/720 ', 720),
+  ('VI Outdoor', 1440),
+  ('VI 30m Round', 720);
+  
 
 -- range breakdowns
 INSERT INTO `rangeinfo` (`RoundID`, `SequenceNo`, `Distance`, `Ends`, `TargetFace`) VALUES
