@@ -156,20 +156,40 @@ CREATE TABLE IF NOT EXISTS `championshipcomp` (
   FOREIGN KEY (`CompetitionID`)  REFERENCES `competition`(`CompetitionID`)
 );
 
+-- Indexes --
+
+CREATE INDEX idx_archer_history ON scorerecord(ArcherID, RoundID, Date);
+
+CREATE INDEX idx_round_records ON scorerecord(RoundID, IsPermanent, OfficialTotal);
+
+CREATE INDEX idx_pending_scores ON scorerecord(IsPermanent);
+
+CREATE INDEX idx_range_sequence ON rangeinfo(RoundID, SequenceNo);
+
+CREATE INDEX idx_equiv_dates ON equivalentround(BaseRoundID, ValidFrom, ValidTo);
+
 -- ---- data ----
 
 INSERT INTO `equipment` (`EquipmentName`) VALUES
   ('Recurve'),('Compound'),('Recurve Barebow'),('Compound Barebow'),('Longbow');
 
 INSERT INTO `archerclass` (`ClassName`, `Gender`, `MinAge`, `MaxAge`) VALUES
-  ('Male Open','M',21,NULL),
-  ('Female Open','F',21,NULL),
-  ('50+ Male','M',50,59),
-  ('50+ Female','F',50,59),
-  ('Under 18 Male','M',16,17),
-  ('Under 18 Female','F',16,17),
-  ('Under 21 Male','M',18,20),
-  ('Under 21 Female','F',18,20);
+  ('Male Open',       'M', 21, 49),
+  ('Female Open',     'F', 21, 49),
+  ('70+ Male',        'M', 70, null),
+  ('70+ Female',        'F', 70, null),
+  ('60+ Male',        'M', 60, 69),
+  ('60+ Female',        'F', 60, 69),
+  ('50+ Male',        'M', 50, 59),
+  ('50+ Female',      'F', 50, 59),
+  ('Under 21 Male',   'M', 18, 20),
+  ('Under 21 Female',   'F', 18, 20),
+  ('Under 18 Male',   'M', 16, 17),
+  ('Under 18 Female', 'F', 16, 17),
+  ('Under 16 Male', 'M', 14, 15),
+  ('Under 16 Female', 'F', 14, 15),
+  ('Under 14 Male', 'M', 6, 13), -- chat gpt said <=13 idk i put 6
+  ('Under 14 Female', 'F', 6, 13);
 
 INSERT INTO `archerinfo` (`AVNumber`,`Fname`,`Lname`,`BirthYear`,`Gender`,`DefaultEquipmentID`) VALUES
   ('AV10005','Daniel','Nguyen',2006,'M',1),
@@ -213,8 +233,45 @@ INSERT INTO `archerinfo` (`AVNumber`,`Fname`,`Lname`,`BirthYear`,`Gender`,`Defau
   ('AV10351','Hannah','Brooks',1964,'F',3),
   ('AV10361','Olivia','Anderson',1998,'F',2);
 
-INSERT INTO `roundinfo` (`RoundName`,`MaxScore`) VALUES
-  ('WA90/1440',1440),('WA70/1440',1440),('WA60/1440',1440),('Sydney',1200),('Brisbane',1200);
+INSERT INTO `roundinfo` (`RoundName`, `MaxScore`) VALUES
+  ('WA90/1440', 1440),
+  ('WA70/1440', 1440),
+  ('WA60/1440', 1440),
+  ('AA50/1440', 1440),
+  ('AA40/1440', 1440),
+  ('Long Sydney', 1200),
+  ('Sydney', 1200),
+  ('Long Brisbane', 1200),
+  ('Brisbane', 1200),
+  ('Adelaide', 1200),
+  ('Short Adelaide', 1200),
+  ('Hobart', 900),
+  ('Perth', 900),
+  ('Canberra WA60/900', 900),
+  ('Short Canberra', 900),
+  ('Junior Canberra', 900),
+  ('Mini Canberra', 900),
+  ('Grange', 900),
+  ('Melbourne', 900),
+  ('Darwin', 900),
+  ('Geelong', 900),
+  ('Newcastle', 900),
+  ('Holt', 900),
+  ('Samford', 900),
+  ('Drake', 900),
+  ('Wollongong', 720),
+  ('Townsville', 720),
+  ('Launceston', 720),
+  ('WA70/720', 720),
+  ('WA60/720', 720),
+  ('WA50/720', 720),
+  ('AA50/720', 720),
+  ('WABB50/720', 720),
+  ('AA40/720', 720),
+  ('AA30/720', 720),
+  ('AA20/720 ', 720),
+  ('VI Outdoor', 1440),
+  ('VI 30m Round', 720);
 
 INSERT INTO `rangeinfo` (`RoundID`,`SequenceNo`,`Distance`,`Ends`,`TargetFace`) VALUES
   (1,1,90,6,122),(1,2,70,6,122),(1,3,50,6,80),(1,4,30,6,80);
