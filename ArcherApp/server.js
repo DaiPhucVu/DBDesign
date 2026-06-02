@@ -161,9 +161,10 @@ app.post('/api/records', async (req, res) => {
 
   try {
     const recordDate = EntryDate || new Date().toISOString().slice(0, 10)
+    const recordTime = new Date().toTimeString().split(' ')[0] // Time parameter has no use in this func as script gets system time.
     const [result] = await pool.query(
       'INSERT INTO scorerecord (ArcherID, RoundID, EquipmentID, Date, Time, PrelimTotal, IsPermanent) VALUES (?, ?, ?, ?, ?, 0, false)',
-      [ArcherID, RoundID, EquipmentID, recordDate, Time || null]
+      [ArcherID, RoundID, EquipmentID, recordDate, recordTime || null]
     )
     res.status(201).json({ RecordID: result.insertId })
   } catch (err) {
