@@ -2,6 +2,18 @@
 import cors from 'cors'
 import mysql from 'mysql2/promise'
 
+const isValidInteger = (value) => {
+  return Number.isInteger(Number(value)) && Number(value) > 0
+}
+
+const isValidDate = (value) => {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value)
+}
+
+const isValidTime = (value) => {
+  return /^\d{2}:\d{2}(:\d{2})?$/.test(value)
+}
+
 const app = express()
 const port = process.env.PORT || 3000
 const dbName = process.env.DB_DATABASE || 'archerdb'
@@ -157,7 +169,28 @@ app.get('/api/equipment', async (req, res) => {
 // Create a new scorerecord (start entry session)
 app.post('/api/records', async (req, res) => {
   const { ArcherID, RoundID, EquipmentID, EntryDate, Time } = req.body
-  if (!ArcherID || !RoundID || !EquipmentID) return res.status(400).json({ error: 'Missing required fields' })
+
+if (
+  !isValidInteger(ArcherID) ||
+  !isValidInteger(RoundID) ||
+  !isValidInteger(EquipmentID)
+) {
+  return res.status(400).json({
+    error: 'Invalid ArcherID, RoundID or EquipmentID'
+  })
+}
+
+if (EntryDate && !isValidDate(EntryDate)) {
+  return res.status(400).json({
+    error: 'Invalid date format'
+  })
+}
+
+if (Time && !isValidTime(Time)) {
+  return res.status(400).json({
+    error: 'Invalid time format'
+  })
+}
 
   try {
     const recordDate = EntryDate || new Date().toISOString().slice(0, 10)
@@ -176,7 +209,31 @@ app.post('/api/records', async (req, res) => {
 // Add an end and its arrows for a record
 app.post('/api/records/:id/ends', async (req, res) => {
   const recordId = Number(req.params.id)
-  const { RangeNo, EndNo, Arrows } = req.body // Arrows = [{position:1,score:10,isX:true},...]
+const { RangeNo, EndNo, Arrows } = req.body
+
+if (!isValidInteger(recordId)) {
+  return res.status(400).json({
+    error: 'Invalid RecordID'
+  })
+}
+
+if (!isValidInteger(RangeNo)) {
+  return res.status(400).json({
+    error: 'Invalid RangeNo'
+  })
+}
+
+if (!isValidInteger(EndNo)) {
+  return res.status(400).json({
+    error: 'Invalid EndNo'
+  })
+}
+
+if (!Array.isArray(Arrows) || Arrows.length === 0) {
+  return res.status(400).json({
+    error: 'Arrows are required'
+  })
+} // Arrows = [{position:1,score:10,isX:true},...]
   if (!recordId || !Array.isArray(Arrows) || Arrows.length === 0) return res.status(400).json({ error: 'Missing data' })
 
   try {
@@ -186,11 +243,35 @@ app.post('/api/records/:id/ends', async (req, res) => {
     const insertArrow = 'INSERT INTO arrowscore (EndID, ArrowPosition, ArrowScore, IsX) VALUES (?, ?, ?, ?)'
     let sum = 0
     for (const a of Arrows) {
-      const pos = Number(a.position)
-      const score = a.score === 'M' ? 0 : Number(a.score)
-      const isX = !!a.isX
-      await pool.query(insertArrow, [endId, pos, score, isX ? 1 : 0])
-      sum += score
+  const pos = Number(a.position)
+  const score = a.score === 'M' ? 0 : Number(a.score)
+  const isX = !!a.isX
+
+  if (!Number.isInteger(pos) || pos < 1 || pos > 6) {
+    return res.status(400).json({
+      error: 'Invalid arrow position'
+    })
+  }
+
+  if (!Number.isInteger(score) || score < 0 || score > 10) {
+    return res.status(400).json({
+      error: 'Arrow score must be between 0 and 10'
+    })
+  }
+
+  if (isX && score !== 10) {
+    return res.status(400).json({
+      error: 'X can only be recorded on a score of 10'
+    })
+  }
+
+  await pool.query(
+    insertArrow,
+    [endId, pos, score, isX ? 1 : 0]
+  )
+
+  sum += score
+
     }
 
     // update PrelimTotal on scorerecord
