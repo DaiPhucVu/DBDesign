@@ -1,21 +1,19 @@
 -- use cases queries
 -- for Archer
 -- Query 1: Look up personal score history overtime 
-EXPLAIN
+use archerdb;
 SELECT * FROM scorerecord 
 WHERE ArcherID = 1 
 ORDER BY Date DESC;
 
 -- Query 2: Filter records by date range and round type and sorted by highest score or date 
-EXPLAIN
 SELECT * FROM scorerecord 
-WHERE ArcherID = 5
-  AND RoundID = 1 
-  AND Date BETWEEN '2018-01-01' AND '2025-12-31'
+WHERE ArcherID = 2
+  AND RoundID = 1
+  AND Date BETWEEN '2018-01-01' AND '2026-12-31'
 ORDER BY OfficialTotal DESC, Date DESC;
 
 -- Query 3: Look up round definition
-EXPLAIN
 SELECT r.RoundName, rng.SequenceNo, rng.Distance, rng.Ends, rng.TargetFace
 FROM roundinfo r
 JOIN rangeinfo rng ON r.RoundID = rng.RoundID
@@ -34,15 +32,15 @@ JOIN archerclass c ON er.ClassID = c.ClassID
 JOIN equipment eq ON er.EquipmentID = eq.EquipmentID
 WHERE b.RoundID = 1;
 
--- Query 5: Viewing club competition results to see placements and total round scores (doesnt shows)
+-- Query 5: Viewing club competition results to see placements and total round scores (We only have records for CompetitionID = 6)
 SELECT a.Fname, a.Lname, s.OfficialTotal
 FROM competitionscore cs
 JOIN scorerecord s ON cs.RecordID = s.RecordID
 JOIN archerinfo a ON s.ArcherID = a.ArcherID
-WHERE cs.CompetitionID = 2
+WHERE cs.CompetitionID = 6
 ORDER BY s.OfficialTotal DESC;
 
--- Query 6: Look up championship result of a specific round (doesnt shows anything due to insufficient data)
+-- Query 6: Look up championship result of a specific round 
 SELECT a.Fname, a.Lname, s.OfficialTotal
 FROM championshipcomp cc
 JOIN competition c ON cc.CompetitionID = c.CompetitionID
@@ -54,15 +52,13 @@ WHERE cc.ChampionshipID = 1
 ORDER BY s.OfficialTotal DESC;
 
 -- Query 7: Look up personal best score in a specific round
-EXPLAIN
 SELECT MAX(OfficialTotal) AS PersonalBest 
 FROM scorerecord 
-WHERE ArcherID = 2 
-  AND RoundID = 2 
+WHERE ArcherID = 2
+  AND RoundID = 1
   AND IsPermanent = TRUE;
   
 -- Query 8: Club’s record of best score in a round with archer’s name
-EXPLAIN
 SELECT a.Fname, a.Lname, s.OfficialTotal
 FROM scorerecord s
 JOIN archerinfo a ON s.ArcherID = a.ArcherID
@@ -86,16 +82,16 @@ JOIN equipment e ON a.DefaultEquipmentID = e.EquipmentID
 WHERE a.ArcherID = 1;
 
 -- Query 11: Look up and review archer’s submitted scores
-EXPLAIN
 SELECT * FROM scorerecord 
 WHERE IsPermanent = FALSE;
 
--- Query 12: Query historical round records (doesnt work bcus no historical round yet i.e. valid from date start at 2020 and no valid to date recorded)
-EXPLAIN
+-- Query 12: Query historical round records 
+-- (doesnt work bcus no historical round yet i.e. valid from date start at 2020 and no valid to date recorded)
+-- it might not be the case idk
 SELECT e.RoundName AS HistoricalEquivalent 
 FROM equivalentround er
 JOIN roundinfo e ON er.EquivRoundID = e.RoundID
-WHERE er.BaseRoundID = 1 
+WHERE er.BaseRoundID = 1
   AND '2018-06-15' >= er.ValidFrom 
   AND (er.ValidTo IS NULL OR '2018-06-15' <= er.ValidTo);
 
