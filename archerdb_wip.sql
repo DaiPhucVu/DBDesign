@@ -156,6 +156,18 @@ CREATE TABLE IF NOT EXISTS `championshipcomp` (
   FOREIGN KEY (`CompetitionID`)  REFERENCES `competition`(`CompetitionID`)
 );
 
+-- Indexes --
+
+CREATE INDEX idx_archer_history ON scorerecord(ArcherID, RoundID, Date);
+
+CREATE INDEX idx_round_records ON scorerecord(RoundID, IsPermanent, OfficialTotal);
+
+CREATE INDEX idx_pending_scores ON scorerecord(IsPermanent);
+
+CREATE INDEX idx_range_sequence ON rangeinfo(RoundID, SequenceNo);
+
+CREATE INDEX idx_equiv_dates ON equivalentround(BaseRoundID, ValidFrom, ValidTo);
+
 -- ---- data ----
 
 INSERT INTO `equipment` (`EquipmentName`) VALUES
