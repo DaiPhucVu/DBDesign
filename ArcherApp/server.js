@@ -206,6 +206,22 @@ if (Time && !isValidTime(Time)) {
   }
 })
 
+// get the ranges for a round so the frontend knows what ends to show
+app.get('/api/rounds/:id/ranges', async (req, res) => {
+  const roundId = Number(req.params.id)
+  if (!isValidInteger(roundId)) return res.status(400).json({ error: 'Invalid RoundID' })
+  try {
+    const [rows] = await pool.query(
+      'SELECT RangeID, SequenceNo, Distance, Ends, TargetFace FROM rangeinfo WHERE RoundID = ? ORDER BY SequenceNo',
+      [roundId]
+    )
+    res.json(rows)
+  } catch (err) {
+    console.error('GET /api/rounds/:id/ranges', err)
+    res.status(500).json({ error: 'Unable to fetch ranges' })
+  }
+})
+
 // Add an end and its arrows for a record
 app.post('/api/records/:id/ends', async (req, res) => {
   const recordId = Number(req.params.id)
