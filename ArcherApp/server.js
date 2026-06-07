@@ -300,6 +300,34 @@ if (!Array.isArray(Arrows) || Arrows.length === 0) {
   }
 })
 
+//List unapproved scores
+app.get('/api/get_unapproved_scores', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM scorerecord WHERE OfficialTotal IS NULL')
+    res.json(rows)
+  } catch (err) {
+    console.error('GET /api/get_unapproved_scores', err)
+    res.status(500).json({ error: 'Unable to fetch unapproved scores' })
+  }
+})
+
+// INSERT an official score into a scorerecord that doesn't have one
+app.post('/api/submit_instructor_score', async (req, res) => {
+	
+	const { OfficialTotal, RecordID } = req.body
+	
+	try {
+	const [result] = await pool.query(
+      'UPDATE scorerecord SET OfficialTotal = ?, IsPermanent = true where RecordID = ? and IsPermanent = false and OfficialTotal is NULL;',
+      [OfficialTotal, RecordID]
+    )
+    res.status(201).json({ RecordID: result.insertId })
+  } catch (err) {
+    console.error('POST /api/submit_instructor_score', err)
+    res.status(500).json({ error: 'Unable submit official score' })
+  }
+})
+
 const startServer = async () => {
   try {
     await ensureDatabase()
